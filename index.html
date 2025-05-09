@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Breathing Visualizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    canvas { background-color: #f3f4f6; display: block; margin: auto; }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center">
+  <h1 class="text-2xl font-bold mb-4">Breathing Visualizer</h1>
+  <p class="mb-6 text-gray-600">Follow the expanding and contracting circle to breathe calmly</p>
+  <canvas id="breathCanvas" width="300" height="300"></canvas>
+  <p id="breathLabel" class="text-xl mt-6 font-medium text-blue-700">Get Ready...</p>
+
+  <script>
+    const canvas = document.getElementById('breathCanvas');
+    const ctx = canvas.getContext('2d');
+    const label = document.getElementById('breathLabel');
+
+    let frame = 0;
+    const breatheInTime = 4; // seconds
+    const holdTime = 2;
+    const breatheOutTime = 4;
+    const fps = 60;
+    const maxRadius = 100;
+
+    function animate() {
+      const totalFrames = (breatheInTime + holdTime + breatheOutTime) * fps;
+      frame = (frame + 1) % totalFrames;
+
+      let radius;
+      let phase = '';
+      if (frame < breatheInTime * fps) {
+        radius = (frame / (breatheInTime * fps)) * maxRadius;
+        phase = 'Breathe In';
+      } else if (frame < (breatheInTime + holdTime) * fps) {
+        radius = maxRadius;
+        phase = 'Hold';
+      } else {
+        const t = (frame - (breatheInTime + holdTime) * fps) / (breatheOutTime * fps);
+        radius = maxRadius * (1 - t);
+        phase = 'Breathe Out';
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(150, 150, radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(59,130,246,0.4)';
+      ctx.fill();
+      label.textContent = phase;
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
